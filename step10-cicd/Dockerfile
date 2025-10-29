@@ -11,8 +11,11 @@ RUN mvn dependency:go-offline
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# 실행 이미지 - Distroless (Debian 12, 공개 pull 가능)
-FROM gcr.io/distroless/java17-debian12
+# 실행 이미지 - Eclipse Temurin Alpine (취약점 최소화)
+FROM eclipse-temurin:17-jre-alpine
+
+# 패키지 업데이트로 취약점 제거
+RUN apk update && apk upgrade && rm -rf /var/cache/apk/*
 
 # Build arguments (GitHub Actions에서 전달)
 ARG TEAM
