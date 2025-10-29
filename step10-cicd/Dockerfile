@@ -11,8 +11,8 @@ RUN mvn dependency:go-offline
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# 실행 이미지 - OpenJDK 17
-FROM openjdk:17-jdk-slim
+# 실행 이미지 - Distroless (최소한의 취약점)
+FROM gcr.io/distroless/java17-debian11
 
 # Build arguments (GitHub Actions에서 전달)
 ARG TEAM
