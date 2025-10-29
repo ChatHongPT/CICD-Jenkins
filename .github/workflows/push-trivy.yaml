@@ -108,9 +108,9 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
+          host: 113.198.66.75
+          username: ubuntu
+          port: 19201 
           key: ${{ secrets.SSH_KEY }}
           command_timeout: 10m
           script: |
