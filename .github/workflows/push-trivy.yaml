@@ -1,15 +1,21 @@
 name: Build and Push Image
+
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     permissions:
       id-token: write # keyless 서명용
       packages: write # GHCR push 권한
+
     env:
-      IMAGE: ghcr.io/chathongpt/step10-cicd
+      IMAGE: ghcr.io/${{ github.repository_owner }}/application
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v6
         id: push
         with:
-          context: ./step10-cicd
+          context: .
           push: true
           tags: |
             ${{ env.IMAGE }}:latest
@@ -37,16 +43,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            TEAM=chathongpt
+            TEAM=${{ github.repository_owner }}
             COLOR=${{ secrets.TEAM_COLOR }}
 
-      # Trivy로 빌드된 이미지 scan → 취약점 발견 시 실패 (보안 게이트 역할)
+      # Trivy로 빌드된 이미지 scan -> 취약점 발견 시 실패 (보안 게이트 역할)
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: "${{ env.IMAGE }}@${{ steps.push.outputs.digest }}"
           format: "table"
-          severity: "CRITICAL,HIGH"
+          severity: "CRITICAL,HIGH,MEDIUM"
           exit-code: 1
 
       # CycloneDX 포맷으로 SBOM 생성
@@ -67,7 +73,7 @@ jobs:
           DIGEST: ${{ steps.push.outputs.digest }}
         run: |
           cosign sign --yes \
-            ${{ env.IMAGE }}@${DIGEST}
+            ${{ env.IMAGE }}:sha-${{ github.sha }}
 
       # sbom.json 파일을 이미지에 증명용으로 첨부
       # 이미지 내부에 GHCR 메타데이터로 구성요소들이 남아있음
@@ -78,4 +84,11 @@ jobs:
           cosign attest --yes \
             --predicate sbom.json \
             --type cyclonedx \
-            ${{ env.IMAGE }}@${DIGEST}
+            ${{ env.IMAGE }}:sha-${{ github.sha }}
+
+      - name: Verify image base
+        run: |
+          echo "Checking image layers and base..."
+          docker pull ${{ env.IMAGE }}:sha-${{ github.sha }}
+          docker history ${{ env.IMAGE }}:sha-${{ github.sha }} --no-trunc
+          echo "Image verification completed successfully"
