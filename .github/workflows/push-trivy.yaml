@@ -28,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v6
         id: push
         with:
-          context: ./CI_CD_OS_maven
+          context: ./step10-cicd
           push: true
           tags: |
             ${{ env.IMAGE }}:latest
