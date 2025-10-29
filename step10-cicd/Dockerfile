@@ -11,7 +11,7 @@ RUN mvn dependency:go-offline
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# 실행 이미지 - Distroless (최신 Debian 12 기반)
+# 실행 이미지 - Distroless (최신 버전)
 FROM gcr.io/distroless/java17-debian12
 
 # Build arguments (GitHub Actions에서 전달)
