@@ -14,17 +14,11 @@ jobs:
       packages: write # GHCR push 권한
 
     env:
-      IMAGE: ghcr.io/chathongpt/step10-cicd
+      IMAGE: ghcr.io/${{ toLower(github.repository_owner) }}/application
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set lowercase owner/env
-        shell: bash
-        run: |
-          echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
-          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/application" >> $GITHUB_ENV
-          echo "TEAM=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
 
       - name: Set up QEMU and buildx
         uses: docker/setup-buildx-action@v3
@@ -40,7 +34,8 @@ jobs:
         uses: docker/build-push-action@v6
         id: push
         with:
-          context: .
+          context: ./step10-cicd
+          file: ./step10-cicd/Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE }}:latest
@@ -49,7 +44,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            TEAM=chathongpt
+            TEAM=${{ toLower(github.repository_owner) }}
             COLOR=${{ secrets.TEAM_COLOR }}
 
       # Trivy로 빌드된 이미지 scan -> 취약점 발견 시 실패 (보안 게이트 역할)
