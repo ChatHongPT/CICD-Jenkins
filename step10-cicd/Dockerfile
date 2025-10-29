@@ -11,8 +11,8 @@ RUN mvn dependency:go-offline
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# 실행 이미지 - Distroless (최신 버전)
-FROM gcr.io/distroless/java17-debian12
+# 실행 이미지 - Chainguard Wolfi JRE (CVEs 최소화)
+FROM cgr.dev/chainguard/java:17-jre
 
 # Build arguments (GitHub Actions에서 전달)
 ARG TEAM
