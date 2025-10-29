@@ -40,14 +40,14 @@ jobs:
             TEAM=chathongpt
             COLOR=${{ secrets.TEAM_COLOR }}
 
-      # Trivy로 빌드된 이미지 scan → 취약점 발견 시 경고만 표시
+      # Trivy로 빌드된 이미지 scan → 취약점 발견 시 실패 (보안 게이트 역할)
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: "${{ env.IMAGE }}@${{ steps.push.outputs.digest }}"
           format: "table"
           severity: "CRITICAL,HIGH"
-          exit-code: 0
+          exit-code: 1
 
       # CycloneDX 포맷으로 SBOM 생성
       - name: Generate SBOM with Trivy
