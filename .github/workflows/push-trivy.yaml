@@ -111,8 +111,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           port: ${{ secrets.SSH_PORT }}
-          # base64 인코딩된 프라이빗 키 사용 권장 (개행/포맷 문제 회피)
-          key_base64: ${{ secrets.SSH_KEY_B64 }}
+          key: ${{ secrets.SSH_KEY }}
           command_timeout: 10m
           script: |
             OWNER_LC=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
