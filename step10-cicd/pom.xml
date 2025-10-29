@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<tomcat.version>10.1.45</tomcat.version>
+		<logback.version>1.5.19</logback.version>
 	</properties>
 	<dependencies>
 		<dependency>
