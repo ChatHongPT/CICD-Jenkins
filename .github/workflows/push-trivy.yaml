@@ -9,7 +9,7 @@ jobs:
       id-token: write # keyless 서명용
       packages: write # GHCR push 권한
     env:
-      IMAGE: ghcr.io/${{ github.repository_owner | downcase }}/step10-cicd
+      IMAGE: ghcr.io/chathongpt/step10-cicd
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            TEAM=${{ github.repository_owner | downcase }}
+            TEAM=chathongpt
             COLOR=${{ secrets.TEAM_COLOR }}
 
       # Trivy로 빌드된 이미지 scan → 취약점 발견 시 실패 (보안 게이트 역할)
